@@ -1,0 +1,125 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<style>
+			canvas {
+				position: absolute;
+				top:0;
+				bottom: 0;
+				left: 0;
+				right: 0;
+
+				margin: auto;
+			}
+			body {
+				background-color: black;
+			}
+		</style>
+	</head>
+	<body>
+		<canvas id="myCanvas" width="1200px" height="700px">
+
+		</canvas>
+		
+		<script type="text/JavaScript">
+			
+			function Point(x, y) {
+				this.x = x;
+				this.y = y;
+				
+				this.middle = function(p){
+				
+					return new Point(Math.floor((this.x + p.x)/2), Math.floor((this.y + p.y)/2));
+				}
+				
+				this.toString = function(){
+					"x: " + this.x + " y: " + this.y;
+				}
+			}
+			
+			function PaintingCanvas(canvasName) {
+			
+				this.canvas = document.getElementById(canvasName);
+
+				this.context = this.canvas.getContext("2d");
+				this.canvasWidth = this.canvas.width;
+				this.canvasHeight = this.canvas.height;
+				this.imageData = this.context.getImageData(0, 0, this.canvasWidth, this.canvasHeight);
+				this.data = this.imageData.data;
+				
+				this.drawPixelWithColor = function(x, y, r, g, b, a) {
+					var index = (x + y * this.canvasWidth) * 4;
+
+					this.data[index + 0] = r;
+					this.data[index + 1] = g;
+					this.data[index + 2] = b;
+					this.data[index + 3] = a;
+				}
+				
+				this.drawPixel = function(x, y) {
+				
+					var red = Math.floor(x/this.canvasWidth*255);
+					var blue = Math.floor(y/this.canvasHeight*255);
+					var green = Math.floor((x/this.canvasWidth + y/this.canvasHeight)*255);
+					
+					this.drawPixelWithColor(x, y, red, green, blue, 255);
+				}
+				
+				this.drawPoint = function(point) {
+					this.drawPixel(point.x, point.y);
+				}	
+				
+				this.updateCanvas = function() {
+					this.context.putImageData(this.imageData, 0, 0);
+				}
+				
+				this.getTrianglePoints = function() {
+					return [
+						new Point(this.canvasWidth/2, 1),
+						new Point(1, this.canvasHeight-1),
+						new Point(this.canvasWidth-1, this.canvasHeight-1)
+					];
+				}
+			}
+			
+			function Triangler(canvas) {
+				this.canvas = canvas;		
+				this.points = canvas.getTrianglePoints();
+				this.currentPoint = this.points[0];
+				
+				this.canvas.drawPoint(this.points[0]);
+				this.canvas.drawPoint(this.points[1]);
+				this.canvas.drawPoint(this.points[2]);	
+				this.canvas.updateCanvas();
+					
+				this.drawNext = function(){
+					
+					var random = Math.floor(Math.random() * 3);
+					var randomPoint = this.points[random];
+						
+					this.currentPoint = this.currentPoint.middle(randomPoint);
+					this.canvas.drawPoint(this.currentPoint);
+				}
+				
+				this.updateCanvas = function(){
+					this.canvas.updateCanvas();
+				}
+			}
+			
+			var canvas = new PaintingCanvas("myCanvas");
+			var triangler = new Triangler(canvas);
+			
+			setInterval(function(){
+				for(var i = 0; i < 120; i++){
+					triangler.drawNext();
+				}
+				
+				triangler.updateCanvas();
+			},
+			30);
+	
+			
+		</script>
+		
+	</body>
+</html>
