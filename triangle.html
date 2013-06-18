@@ -17,7 +17,7 @@
 		</style>
 	</head>
 	<body>
-		<canvas id="myCanvas" width="1200px" height="700px">
+		<canvas id="myCanvas">
 
 		</canvas>
 		
@@ -40,7 +40,9 @@
 			function PaintingCanvas(canvasName) {
 			
 				this.canvas = document.getElementById(canvasName);
-
+				this.canvas.width  = window.innerWidth - 10;
+				this.canvas.height = window.innerHeight - 10;
+				
 				this.context = this.canvas.getContext("2d");
 				this.canvasWidth = this.canvas.width;
 				this.canvasHeight = this.canvas.height;
@@ -109,14 +111,14 @@
 			var canvas = new PaintingCanvas("myCanvas");
 			var triangler = new Triangler(canvas);
 			
-			setInterval(function(){
+			var interval = setInterval(function(){
 				for(var i = 0; i < 120; i++){
 					triangler.drawNext();
 				}
 				
 				triangler.updateCanvas();
 			},
-			30);
+			30);		
 	
 		</script>
 		
